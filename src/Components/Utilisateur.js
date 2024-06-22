@@ -1,38 +1,41 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { db } from "../Firebase";
-import { collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query } from "firebase/firestore";
-import { 
-  Button, 
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
-  DialogTitle, 
-  TextField, 
-  ListItem, 
-  ListItemAvatar, 
-  ListItemText, 
-  Avatar,  
-  IconButton, 
+import { collection, query } from "firebase/firestore";
+import { addDoc, doc, deleteDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
   DialogContentText,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  IconButton,
   Box,
   Select,
-  MenuItem
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import InfoIcon from '@mui/icons-material/Info';
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import InfoIcon from "@mui/icons-material/Info";
 import female from "../img/female.png";
 import male from "../img/male.png";
 
-const Utilisateur = ({ Utilisateur }) => {
+const Utilisateurs = ({ utilisateurs }) => {
   const [email, setEmail] = useState("");
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [age, setAge] = useState("");
   const [numtel, setNumtel] = useState("");
   const [sexe, setSexe] = useState("");
-  const [utilisateurs, setUtilisateurs] = useState([]);
-  const [filteredUtilisateurs, setFilteredUtilisateurs] = useState([]);
+  const [UsersData, setUsersData] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [EditId, setEditId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -40,22 +43,21 @@ const Utilisateur = ({ Utilisateur }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const fetchData = useCallback(async () => {
-    const q = query(collection(db, "Utilisateur"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const utilisateursData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-      setUtilisateurs(utilisateursData);
-      setFilteredUtilisateurs(utilisateursData); // Initialize filtered list with all data
+    const q = query(collection(db, "utilisateurs"));
+    const unsubscribe = onSnapshot(q, (snapshot) => { // Subscribe to Firestore
+      const UsersData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+      setUsersData(UsersData);
+      setFilteredUsers(UsersData); // Initialize filtered list with all data
     });
-
+     
     return unsubscribe;
   }, []);
-
 
   useEffect(() => {
     let unsubscribe; // Declare unsubscribe outside to avoid re-declaration on every render
     fetchData().then((sub) => {
       unsubscribe = sub; // Assign the returned unsubscribe function
-      console.log("fetching data for utilisateurs...");
+      console.log("fetching data for Users...");
     });
 
     return () => {
@@ -67,53 +69,63 @@ const Utilisateur = ({ Utilisateur }) => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+
+    if (email.trim() === '' ||
+        nom.trim() === '' ||
+        prenom.trim() === '' ||
+        age === '' ||
+        numtel === '' ) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
     let data = {
       email: email,
       nom: nom,
       prenom: prenom,
+      sexe: sexe,
       age: age,
       numtel: numtel,
-      sexe: sexe
     };
 
     try {
       if (EditId) {
-        const docRef = doc(db, "Utilisateur", EditId);
+        const docRef = doc(db, "utilisateurs", EditId);
         await updateDoc(docRef, data);
       } else {
-        await addDoc(collection(db, "Utilisateur"), data);
+        await addDoc(collection(db, "utilisateurs"), data);
       }
       clearForm();
     } catch (e) {
       console.error("Error adding/updating document: ", e);
     }
-  }
+  };
 
   const handleDelete = (id) => {
     setDeleteId(id);
     setShowDeleteModal(true);
-  }
+  };
 
   const confirmDelete = async () => {
     try {
-      await deleteDoc(doc(db, "Utilisateur", deleteId));
+      await deleteDoc(doc(db, "utilisateurs", deleteId));
       setDeleteId(null);
       setShowDeleteModal(false);
     } catch (e) {
       console.error("Error removing document: ", e);
     }
-  }
+  };
 
-  const handleEdit = (utilisateur) => {
-    setEditId(utilisateur.id);
-    setEmail(utilisateur.email);
-    setNom(utilisateur.nom);
-    setPrenom(utilisateur.prenom);
-    setAge(utilisateur.age);
-    setNumtel(utilisateur.numtel);
-    setSexe(utilisateur.sexe);
+  const handleEdit = (User) => {
+    setEditId(User.id);
+    setEmail(User.email);
+    setNom(User.nom);
+    setPrenom(User.prenom);
+    setAge(User.age);
+    setNumtel(User.numtel);
+    setSexe(User.sexe);
     setShowModal(true);
-  }
+  };
 
   const clearForm = () => {
     setEmail("");
@@ -126,57 +138,67 @@ const Utilisateur = ({ Utilisateur }) => {
     setShowModal(false);
   };
 
+  const handleSearchAndFilter = (searchTerm) => {
+    const filteredData = UsersData.filter((User) => {
+      const searchCondition = !searchTerm ||
+        User.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        User.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        User.email.toLowerCase().includes(searchTerm.toLowerCase());
+      return searchCondition;
+    });
 
-  
-  const handleSearch = () => {
-    const searchTermLower = searchTerm.toLowerCase();
-    const filteredData = utilisateurs.filter(
-      (utilisateur) =>
-        utilisateur.nom.toLowerCase().includes(searchTermLower) ||
-        utilisateur.prenom.toLowerCase().includes(searchTermLower) ||
-        utilisateur.email.toLowerCase().includes(searchTermLower)
-    );
-    setFilteredUtilisateurs(filteredData);
+    setFilteredUsers(filteredData);
   };
 
- 
+  const handleSearchChange = (e) => {
+    const searchTerm = e.target.value;
+    setSearchTerm(searchTerm);
+    handleSearchAndFilter(searchTerm);
+  };
 
   return (
     <>
-      {Utilisateur && (
+      {utilisateurs && (
         <Box>
-          <Button variant="contained" color="primary" onClick={() => setShowModal(true)}>
-            Ajouter Utilisateur
+          <Button
+            className="add-button"
+            variant="contained"
+            color="primary"
+            onClick={() => setShowModal(true)}
+          >
+            Ajouter Utilisateurs
           </Button>
+        </Box>
+      )}
+      {utilisateurs && (
+        <Box p={2}>
           <TextField
+            name="search"
             label="Rechercher par nom, prenom ou email"
             variant="outlined"
             fullWidth
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ marginBottom: "16px", marginTop: "16px" }}
-            onKeyUp={handleSearch}
+            onChange={handleSearchChange}
+            style={{ marginBottom: "16px" }}
           />
-        </Box>
-      )}
-      {Utilisateur && (
-        <Box mb={2}>
           <div>
-            {filteredUtilisateurs.map((item) => (
+            {filteredUsers.map((item) => (
               <div key={item.id} className="menu-items">
                 <ListItem divider>
                   <ListItemAvatar>
                     <Avatar src={item.sexe === "Femme" ? female : male} />
                   </ListItemAvatar>
-                  <ListItemText 
-                    primary={`${item.nom} ${item.prenom}`} 
+                  <ListItemText
+                    primary={`${item.nom} ${item.prenom}`}
                     secondary={
                       <>
-                        <span>Email : {item.email}</span><br />
-                        <span>Age : {item.age}</span><br />
+                        <span>Email : {item.email}</span>
+                        <br />
+                        <span>Age : {item.age}</span>
+                        <br />
                         <span>Numero de telephone : {item.numtel}</span>
                       </>
-                    } 
+                    }
                   />
                   <IconButton onClick={() => console.log("historique")} color="success">
                     <InfoIcon />
@@ -193,12 +215,14 @@ const Utilisateur = ({ Utilisateur }) => {
           </div>
         </Box>
       )}
-     
-      <Dialog open={showModal} onClose={clearForm} maxWidth="sm" fullWidth>
-        <DialogTitle>{EditId ? "Edit utilisateur" : "Ajouter utilisateur"}</DialogTitle>
+
+      <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{EditId ? "Edit membre" : "Ajouter membre"}</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSave}>
             <TextField
+              required
+              name="email"
               label="email"
               type="email"
               fullWidth
@@ -207,6 +231,8 @@ const Utilisateur = ({ Utilisateur }) => {
               onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
+              required
+              name="nom"
               label="nom"
               type="text"
               fullWidth
@@ -215,6 +241,8 @@ const Utilisateur = ({ Utilisateur }) => {
               onChange={(e) => setNom(e.target.value)}
             />
             <TextField
+              required
+              name="prenom"
               label="prenom"
               type="text"
               fullWidth
@@ -223,6 +251,8 @@ const Utilisateur = ({ Utilisateur }) => {
               onChange={(e) => setPrenom(e.target.value)}
             />
             <TextField
+              required
+              name="age"
               label="age"
               type="number"
               fullWidth
@@ -231,6 +261,8 @@ const Utilisateur = ({ Utilisateur }) => {
               onChange={(e) => setAge(e.target.value)}
             />
             <TextField
+              required
+              name="numtel"
               label="numtel"
               type="number"
               fullWidth
@@ -238,32 +270,42 @@ const Utilisateur = ({ Utilisateur }) => {
               value={numtel}
               onChange={(e) => setNumtel(e.target.value)}
             />
-            <Select
-              fullWidth
-              margin="dense"
-              value={sexe}
-              onChange={(e) => setSexe(e.target.value)}
-            >
-              <MenuItem value="Femme">Femme</MenuItem>
-              <MenuItem value="Homme">Homme</MenuItem>
-            </Select>
+            <FormControl fullWidth margin="dense">
+              <InputLabel id="sexe-label">Sexe</InputLabel>
+              <Select
+                labelId="sexe-label"
+                value={sexe}
+                onChange={(e) => setSexe(e.target.value)}
+              >
+                <MenuItem value="Homme">Homme</MenuItem>
+                <MenuItem value="Femme">Femme</MenuItem>
+              </Select>
+            </FormControl>
           </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={clearForm} color="secondary">
+          <Button
+            onClick={() => {
+              clearForm();
+            }}
+            color="secondary"
+          >
             Cancel
           </Button>
-          <Button onClick={handleSave} color="primary" variant="contained">
+          <Button onClick={handleSave} type="submit" color="primary" variant="contained">
             {EditId ? "Update" : "Save"}
           </Button>
         </DialogActions>
       </Dialog>
-      
-      <Dialog open={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
+      <Dialog
+        className="Modal"
+        open={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+      >
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this utilisateur?
+            Are you sure you want to delete this user?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -279,4 +321,4 @@ const Utilisateur = ({ Utilisateur }) => {
   );
 };
 
-export default Utilisateur;
+export default Utilisateurs;

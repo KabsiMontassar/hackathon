@@ -31,42 +31,39 @@ body::-webkit-scrollbar-thumb {
 }
 
 body {
-  background: #f0eff1;
+  background: #F1DDDF;
+  
 }
+
+
 .logo-container{
   display: flex;
   justify-content: center;
   align-items: center;
 
-  margin-bottom: 20px;
-  
 
 }
 
-
-.logo {
-
-font-size: 1.8rem;
- color: #C73659;
-}
-
-.logoimg{
-  width: 75px;
-  height: 75px;
-  
+.logo{
+  font-size: 2rem;
+  font-weight: 700;
+  color: #BFCC7C;
 
 }
+
 
 .container {
   width: 80%;
+  height: 100%;
   margin: auto;
 }
 
 
 
 .App{
-    background: #f0eff1;
+    background: #F1DDDF;
     height: 100%;
+    margin-top: 2%;
     padding: 50px 0;
 }
 
@@ -75,6 +72,21 @@ font-size: 1.8rem;
 .Navbar{
     display: flex;
     justify-content: space-around;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 10px 0;
+    box-shadow: 0 0 10px #9d9d9d;
+   
+    width: 100%;
+    z-index: 1000;
+    top: 0px;
+    position: fixed;
+    
+
+
+  
+    
+
        
 }
 
@@ -119,7 +131,7 @@ font-size: 1.8rem;
   background-color: #fff;
   border-radius: 40px;
   padding: 30px;
-  width: 70%;
+  width: 80%;
   margin: auto;
   margin-top: 50px;
 }

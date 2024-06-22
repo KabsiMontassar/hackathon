@@ -1,8 +1,8 @@
 
 import Buttons from "./Buttons";
-import logo from"../img/medwise.png";
+import logo from"../img/greener.png";
 
-const Navbar = ({ SetAccueil, SetUtilisateur, SetMedecin, SetDemende }) => {
+const Navbar = ({ Setmembre, setCarte, SetDemende }) => {
 
 
   return (
@@ -16,13 +16,12 @@ const Navbar = ({ SetAccueil, SetUtilisateur, SetMedecin, SetDemende }) => {
     
       <Buttons
         className="Buttons"
-        SetAccueil={SetAccueil}
-        SetUtilisateur={SetUtilisateur}
-        SetMedecin={SetMedecin}
+        Setmembre={Setmembre}
+        setCarte={setCarte}
         SetDemende={SetDemende}
       />
       <div className="logo-container">
-      <h3 className="logo" >MedWise</h3>
+      <h3 className="logo" >Greener</h3>
       </div>
       </div>
   );

@@ -2,7 +2,7 @@
 /**@jsx jsx */
 import { css, jsx } from "@emotion/react";
 
-const Buttons = ({ SetAccueil, SetUtilisateur, SetMedecin, SetDemende }) => {
+const Buttons = ({ Setmembre, setCarte, SetDemende }) => {
  
 
   return (
@@ -18,6 +18,7 @@ const Buttons = ({ SetAccueil, SetUtilisateur, SetMedecin, SetDemende }) => {
           cursor: pointer;
           transition: 0.3s linear;
           outline: none;
+          background: none;
 
          
 
@@ -38,7 +39,7 @@ const Buttons = ({ SetAccueil, SetUtilisateur, SetMedecin, SetDemende }) => {
             padding: 0 5px;
             font-family: "Poppins", sans-serif;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.2rem;
             margin: auto;
            
           }
@@ -46,50 +47,37 @@ const Buttons = ({ SetAccueil, SetUtilisateur, SetMedecin, SetDemende }) => {
       `}
     >
 
-
       <button
         onClick={() => {
-          SetAccueil(true);
-          SetUtilisateur(false);
-          SetMedecin(false);
+          Setmembre(true);
+          setCarte(false);
           SetDemende(false);
         }}
       >
-        <span>Accueil</span>
+        <span>Nos membres</span>
       </button>
 
       <button
         onClick={() => {
-          SetAccueil(false);
-          SetUtilisateur(true);
-          SetMedecin(false);
+          Setmembre(false);
+          setCarte(true);
           SetDemende(false);
         }}
       >
-        <span>Nos utilisateurs</span>
+        <span>Carte des Emplacements</span>
       </button>
 
       <button
         onClick={() => {
-          SetAccueil(false);
-          SetUtilisateur(false);
-          SetMedecin(true);
-          SetDemende(false);
-        }}
-      >
-        <span>Nos Médecin</span>
-      </button>
-
-      <button
-        onClick={() => {
-          SetAccueil(false);
-          SetUtilisateur(false);
-          SetMedecin(false);
+          Setmembre(false);
+          setCarte(false);
           SetDemende(true);
         }}
       >
-        <span>Demande d'adhésion</span>
+        <span>Les attentes</span>
       </button>
+
+    
      
     </div>
   );

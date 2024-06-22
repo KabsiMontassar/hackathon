@@ -1,20 +1,18 @@
  import React from "react";
 
-import Accueil from "./Accueil";
-import Utilisateur from "./Utilisateur";
-import Medecins from "./Medecins";
+import Carte from "./Carte";
+import Utilisateurs from "./Utilisateur";
 import Demende from "./Demende";
 
-const Items = ({accueil, utilisateur, medecin, demende }) => {
+const Items = ({membre, carte,  demende }) => {
 
 
 
   return (
    <>
-      <Accueil accueil={accueil}  />
-      <Utilisateur Utilisateur={utilisateur}  />
-      <Medecins Medecin={medecin}  />
-      <Demende Demende={demende}  />
+      <Utilisateurs utilisateurs={membre}  />
+      <Carte carte={carte}  />
+      <Demende demende={demende}  />
       </>
   );
 };

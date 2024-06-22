@@ -1,14 +1,15 @@
-import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCbyRSlcn8LUGZOmlW-YbJJoC4D28bFLOI",
-  authDomain: "plateforme-medecin.firebaseapp.com",
-  projectId: "plateforme-medecin",
-  storageBucket: "plateforme-medecin.appspot.com",
-  messagingSenderId: "657374844332",
-  appId: "1:657374844332:web:fe8fc3ef2e424ce620d609",
-  measurementId: "G-92EK5E40NR"
+  apiKey: "AIzaSyDqXgDnRa1YIvi05UeKNEol8Lk97ZvjxiU",
+  authDomain: "hackathon-b1e7a.firebaseapp.com",
+  projectId: "hackathon-b1e7a",
+  storageBucket: "hackathon-b1e7a.appspot.com",
+  messagingSenderId: "512659135482",
+  appId: "1:512659135482:web:9042b67dc3367bb51ae243"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 export { db };
