@@ -63,7 +63,7 @@ body {
 .App{
     background: #F1DDDF;
     height: 100%;
-    margin-top: 2%;
+    margin-top: 3%;
     padding: 50px 0;
 }
 
@@ -74,17 +74,13 @@ body {
     justify-content: space-around;
     align-items: center;
     background-color: #ffffff;
-    padding: 10px 0;
+    padding: 20px 0;
     box-shadow: 0 0 10px #9d9d9d;
-   
+    
     width: 100%;
     z-index: 1000;
     top: 0px;
     position: fixed;
-    
-
-
-  
     
 
        

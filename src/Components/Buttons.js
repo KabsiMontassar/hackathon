@@ -27,12 +27,14 @@ const Buttons = ({ Setmembre, setCarte, SetDemende }) => {
             display: block;
             height: 2px;
             width: 0;
-            background: #24242a;
+            background: #476930;
             transition: width 0.3s ease-in;
+           
           }
 
           &:hover::after {
             width: 100%;
+         
           }
 
           span {
@@ -41,6 +43,11 @@ const Buttons = ({ Setmembre, setCarte, SetDemende }) => {
             font-weight: 600;
             font-size: 1.2rem;
             margin: auto;
+
+             &:hover {
+             color : #476930;
+         
+          }
            
           }
         }
@@ -57,7 +64,7 @@ const Buttons = ({ Setmembre, setCarte, SetDemende }) => {
         <span>Nos membres</span>
       </button>
 
-      <button
+      <button  
         onClick={() => {
           Setmembre(false);
           setCarte(true);
