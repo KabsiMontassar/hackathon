@@ -71,6 +71,7 @@ const Demende = ({ demende }) => {
       nom,
       prenom,
       numtel,
+     
       DatedeDemenade: new Date().toLocaleDateString(),
       Address,
       State: "En attente",
