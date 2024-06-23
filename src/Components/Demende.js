@@ -1,7 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { db } from "../Firebase";
-import { collection, query } from "firebase/firestore";
-import { addDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { db } from "../Firebase"; // Adjust this import according to your Firebase setup
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore'; // Ensure Firestore is imported
+
+import {
+  collection,
+  query,
+  addDoc,
+  doc,
+  onSnapshot,
+  updateDoc
+} from "firebase/firestore"; // Import necessary Firestore methods
+
 import demendeImage from "../img/demende.png";
 import {
   Button,
@@ -17,11 +27,10 @@ import {
   ListItemAvatar,
   Avatar,
 } from "@mui/material";
-
-
 import MapIcon from "@mui/icons-material/Map";
 import CheckIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CancelIcon from '@mui/icons-material/CancelOutlined';
+
 const Demende = ({ demende }) => {
   const [email, setEmail] = useState("");
   const [nom, setNom] = useState("");
@@ -71,8 +80,7 @@ const Demende = ({ demende }) => {
       nom,
       prenom,
       numtel,
-     
-      DatedeDemenade: new Date().toLocaleDateString(),
+      DatedeDemenade: firebase.firestore.Timestamp.now(),
       Address,
       State: "En attente",
     };
@@ -141,15 +149,6 @@ const Demende = ({ demende }) => {
     handleSearchAndFilter(searchTerm);
   };
 
-
-
-
-
-
-
-
-
-
   return (
     <>
       {demende && (
@@ -179,8 +178,8 @@ const Demende = ({ demende }) => {
             {filteredDemendes.map((item) => (
               <div key={item.id} className="menu-items">
                 <ListItem divider>
-                  <ListItemAvatar className="demendeimage" >
-                    <Avatar  sx={{ width: 130, height: 130 }} src={demendeImage} />
+                  <ListItemAvatar className="demendeimage">
+                    <Avatar sx={{ width: 130, height: 130 }} src={demendeImage} />
                   </ListItemAvatar>
                   <ListItemText
                     primary={`${item.Address} `}
@@ -192,8 +191,8 @@ const Demende = ({ demende }) => {
                         <br />
                         <span>Email : {item.email}</span>
                         <br />
-                        <span>Date de demende : {item.DatedeDemenade}</span>
-                        <br/>
+                        <span>Date de demende : {item.DatedeDemenade.toDate().toLocaleString()}</span>
+                        <br />
                         <span>Etat : {item.State}</span>
                       </>
                     }
@@ -261,10 +260,7 @@ const Demende = ({ demende }) => {
           </form>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={clearForm}
-            color="secondary"
-          >
+          <Button onClick={clearForm} color="secondary">
             Cancel
           </Button>
           <Button onClick={handleSave} type="submit" color="primary" variant="contained">
