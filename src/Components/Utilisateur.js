@@ -34,6 +34,7 @@ const Utilisateurs = ({ utilisateurs }) => {
   const [age, setAge] = useState("");
   const [numtel, setNumtel] = useState("");
   const [sexe, setSexe] = useState("");
+  const [address, setAddress] = useState("");
   const [UsersData, setUsersData] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [EditId, setEditId] = useState(null);
@@ -74,7 +75,10 @@ const Utilisateurs = ({ utilisateurs }) => {
         nom.trim() === '' ||
         prenom.trim() === '' ||
         age === '' ||
-        numtel === '' ) {
+        numtel === '' || 
+        sexe === '' ||
+      address.trim() === ''
+      ) {
       alert('Veuillez remplir tous les champs obligatoires.');
       return;
     }
@@ -86,6 +90,7 @@ const Utilisateurs = ({ utilisateurs }) => {
       sexe: sexe,
       age: age,
       numtel: numtel,
+      address: address,
     };
 
     try {
@@ -124,6 +129,7 @@ const Utilisateurs = ({ utilisateurs }) => {
     setAge(User.age);
     setNumtel(User.numtel);
     setSexe(User.sexe);
+    setAddress(User.address);
     setShowModal(true);
   };
 
@@ -135,6 +141,7 @@ const Utilisateurs = ({ utilisateurs }) => {
     setAge("");
     setNumtel("");
     setSexe("");
+    setAddress("");
     setShowModal(false);
   };
 
@@ -197,6 +204,8 @@ const Utilisateurs = ({ utilisateurs }) => {
                         <span>Age : {item.age}</span>
                         <br />
                         <span>Numero de telephone : {item.numtel}</span>
+                        <br />
+                        <span>Address : {item.address}</span>
                       </>
                     }
                   />
@@ -269,6 +278,16 @@ const Utilisateurs = ({ utilisateurs }) => {
               margin="dense"
               value={numtel}
               onChange={(e) => setNumtel(e.target.value)}
+            />
+            <TextField
+              required
+              name="address"
+              label="address"
+              type="text"
+              fullWidth
+              margin="dense"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
             />
             <FormControl fullWidth margin="dense">
               <InputLabel id="sexe-label">Sexe</InputLabel>
