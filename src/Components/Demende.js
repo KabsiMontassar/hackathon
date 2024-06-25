@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { db } from "../Firebase";
-import { collection, query } from "firebase/firestore";
+import { collection, query, getDocs,Timestamp } from "firebase/firestore";
 import { addDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
-import demendeImage from "../img/demende.png";
+
 import {
   Button,
   Dialog,
@@ -14,25 +14,34 @@ import {
   IconButton,
   Box,
   DialogActions,
-  ListItemAvatar,
-  Avatar,
+  Select,
+  MenuItem,
 } from "@mui/material";
-
 
 import MapIcon from "@mui/icons-material/Map";
 import CheckIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CancelIcon from '@mui/icons-material/CancelOutlined';
+
 const Demende = ({ demende }) => {
-  const [email, setEmail] = useState("");
-  const [nom, setNom] = useState("");
-  const [prenom, setPrenom] = useState("");
-  const [numtel, setNumtel] = useState("");
-  const [Address, setAddress] = useState("");
+
   const [DemendesData, setDemendesData] = useState([]);
   const [filteredDemendes, setFilteredDemendes] = useState([]);
   const [EditId, setEditId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("");
+  
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const usersCollection = collection(db, "User");
+      const usersSnapshot = await getDocs(usersCollection);
+      const usersData = usersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+         
+      setUsers(usersData);
+    };
+    fetchUsers();
+  }, []);
 
   const fetchData = useCallback(async () => {
     const q = query(collection(db, "Demende"));
@@ -61,19 +70,14 @@ const Demende = ({ demende }) => {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!email || !nom || !prenom || !numtel || !Address) {
-      alert("Please fill all the fields");
+    if (!selectedUser) {
+      alert("Please select a user");
       return;
     }
-
     let data = {
-      email,
-      nom,
-      prenom,
-      numtel,
-      DatedeDemenade: new Date().toLocaleDateString(),
-      Address,
-      State: "En attente",
+      userKey: selectedUser.props.value.id, // Assuming 'uid' is the unique identifier for users
+      DatedeDemende: Timestamp.now(), // Use Firestore Timestamp
+      State: "en attente",
     };
 
     try {
@@ -112,12 +116,9 @@ const Demende = ({ demende }) => {
   };
 
   const clearForm = () => {
-    setEmail("");
-    setNom("");
-    setPrenom("");
+
     setEditId(null);
-    setNumtel("");
-    setAddress("");
+    setSelectedUser("");
     setShowModal(false);
   };
 
@@ -125,9 +126,7 @@ const Demende = ({ demende }) => {
     const filteredData = DemendesData.filter((User) => {
       const searchCondition =
         !searchTerm ||
-        User.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        User.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        User.Address.toLowerCase().includes(searchTerm.toLowerCase());
+        User.userKey.toLowerCase().includes(searchTerm.toLowerCase());
       return searchCondition;
     });
 
@@ -139,15 +138,6 @@ const Demende = ({ demende }) => {
     setSearchTerm(searchTerm);
     handleSearchAndFilter(searchTerm);
   };
-
-
-
-
-
-
-
-
-
 
   return (
     <>
@@ -167,7 +157,7 @@ const Demende = ({ demende }) => {
         <Box p={2}>
           <TextField
             name="search"
-            label="Rechercher par nom, prenom ou address"
+            label="Rechercher par utilisateur"
             variant="outlined"
             fullWidth
             value={searchTerm}
@@ -175,40 +165,31 @@ const Demende = ({ demende }) => {
             style={{ marginBottom: "16px" }}
           />
           <div>
-            {filteredDemendes.map((item) => (
-              <div key={item.id} className="menu-items">
-                <ListItem divider>
-                  <ListItemAvatar className="demendeimage" >
-                    <Avatar  sx={{ width: 130, height: 130 }} src={demendeImage} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={`${item.Address} `}
-                    secondary={
-                      <>
-                        <span>Nom Complet : {item.nom} {item.prenom}</span>
-                        <br />
-                        <span>Numero de télephone : {item.numtel}</span>
-                        <br />
-                        <span>Email : {item.email}</span>
-                        <br />
-                        <span>Date de demende : {item.DatedeDemenade}</span>
-                        <br/>
-                        <span>Etat : {item.State}</span>
-                      </>
-                    }
-                  />
-                  <IconButton onClick={() => console.log("take me to map")} color="info">
-                    <MapIcon />
-                  </IconButton>
-                  <IconButton onClick={() => changeStatetoDone(item.id)} color="success">
-                    <CheckIcon />
-                  </IconButton>
-                  <IconButton onClick={() => changeStatetoCanceled(item.id)} color="warning">
-                    <CancelIcon />
-                  </IconButton>
-                </ListItem>
-              </div>
-            ))}
+          {filteredDemendes.map((item) => (
+            <div key={item.id} className="menu-items">
+              <ListItem divider>
+                <ListItemText
+                  primary={`Utilisateur : ${item.userKey}`}
+                  secondary={
+                    <>
+                      <span>Date de Demande : {item.DatedeDemende.toDate().toLocaleString()}</span>
+                      <br/>
+                      <span>Etat : {item.State}</span>
+                    </>
+                  }
+                />
+                <IconButton onClick={() => console.log("take me to map")} color="info">
+                  <MapIcon />
+                </IconButton>
+                <IconButton onClick={() => changeStatetoDone(item.id)} color="success">
+                  <CheckIcon />
+                </IconButton>
+                <IconButton onClick={() => changeStatetoCanceled(item.id)} color="warning">
+                  <CancelIcon />
+                </IconButton>
+              </ListItem>
+            </div>
+          ))}
           </div>
         </Box>
       )}
@@ -217,46 +198,21 @@ const Demende = ({ demende }) => {
         <DialogTitle>Ajouter Demende</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSave}>
-            <TextField
-              required
+            <Select
+              value={selectedUser}
+              onChange={(event, newValue) => {
+                setSelectedUser(newValue); // newValue is the selected value itself
+              }}
               fullWidth
-              margin="dense"
-              label="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              required
-              fullWidth
-              margin="dense"
-              label="Nom"
-              value={nom}
-              onChange={(e) => setNom(e.target.value)}
-            />
-            <TextField
-              required
-              fullWidth
-              margin="dense"
-              label="Prenom"
-              value={prenom}
-              onChange={(e) => setPrenom(e.target.value)}
-            />
-            <TextField
-              required
-              fullWidth
-              margin="dense"
-              label="Numero de telephone"
-              value={numtel}
-              onChange={(e) => setNumtel(e.target.value)}
-            />
-            <TextField
-              required
-              fullWidth
-              margin="dense"
-              label="Address"
-              value={Address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
+              label="Utilisateur"
+            >
+              <MenuItem value="">Select User</MenuItem>
+              {users.map((user) => (
+                <MenuItem key={user.uid} value={user}>
+                  {user.email}
+                </MenuItem>
+              ))}
+            </Select>
           </form>
         </DialogContent>
         <DialogActions>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { db } from "../Firebase";
 import { collection, query } from "firebase/firestore";
-import { addDoc, doc, deleteDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import { addDoc, doc, deleteDoc, onSnapshot, updateDoc  , GeoPoint} from "firebase/firestore";
 import {
   Button,
   Dialog,
@@ -15,25 +15,19 @@ import {
   ListItemText,
   Avatar,
   IconButton,
-  Box,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  Box
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
-import female from "../img/female.png";
-import male from "../img/male.png";
 
 const Utilisateurs = ({ utilisateurs }) => {
+  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
-  const [nom, setNom] = useState("");
-  const [prenom, setPrenom] = useState("");
-  const [age, setAge] = useState("");
-  const [numtel, setNumtel] = useState("");
-  const [sexe, setSexe] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [position, setPosition] = useState("");   // eslint-disable-line
+
+  const [photoUrl, setPhotoUrl] = useState("");
   const [UsersData, setUsersData] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [EditId, setEditId] = useState(null);
@@ -43,26 +37,26 @@ const Utilisateurs = ({ utilisateurs }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const fetchData = useCallback(async () => {
-    const q = query(collection(db, "utilisateurs"));
-    const unsubscribe = onSnapshot(q, (snapshot) => { // Subscribe to Firestore
+    const q = query(collection(db, "User"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const UsersData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setUsersData(UsersData);
-      setFilteredUsers(UsersData); // Initialize filtered list with all data
+      setFilteredUsers(UsersData);
     });
-     
+
     return unsubscribe;
   }, []);
 
   useEffect(() => {
-    let unsubscribe; // Declare unsubscribe outside to avoid re-declaration on every render
+    let unsubscribe;
     fetchData().then((sub) => {
-      unsubscribe = sub; // Assign the returned unsubscribe function
+      unsubscribe = sub;
       console.log("fetching data for Users...");
     });
 
     return () => {
       if (unsubscribe) {
-        unsubscribe(); // Call unsubscribe to cancel the listener
+        unsubscribe();
       }
     };
   }, [fetchData]);
@@ -70,30 +64,39 @@ const Utilisateurs = ({ utilisateurs }) => {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    if (email.trim() === '' ||
-        nom.trim() === '' ||
-        prenom.trim() === '' ||
-        age === '' ||
-        numtel === '' ) {
+    if (email.trim() === '' || displayName.trim() === '' || phoneNumber.trim() === '') {
       alert('Veuillez remplir tous les champs obligatoires.');
       return;
     }
 
+   // let positionArray = position.split(',').map(coord => parseFloat(coord.trim()));
+
+let positionArray = [0,0]
+let geoPoint = new GeoPoint(positionArray[0], positionArray[1]);
+
     let data = {
       email: email,
-      nom: nom,
-      prenom: prenom,
-      sexe: sexe,
-      age: age,
-      numtel: numtel,
+      display_name: displayName,
+      phone_number: phoneNumber,
+      position: geoPoint,
+      photo_url: photoUrl,
+      created_time: new Date(),
+      fill: "",
+      invitation: "",
+      mission: "",
+      password: "",
+      score: 0,
+      uid: "",
+      Balance: 0,
+      hederaAccountId: ""
     };
 
     try {
       if (EditId) {
-        const docRef = doc(db, "utilisateurs", EditId);
+        const docRef = doc(db, "User", EditId);
         await updateDoc(docRef, data);
       } else {
-        await addDoc(collection(db, "utilisateurs"), data);
+        await addDoc(collection(db, "User"), data);
       }
       clearForm();
     } catch (e) {
@@ -108,7 +111,7 @@ const Utilisateurs = ({ utilisateurs }) => {
 
   const confirmDelete = async () => {
     try {
-      await deleteDoc(doc(db, "utilisateurs", deleteId));
+      await deleteDoc(doc(db, "User", deleteId));
       setDeleteId(null);
       setShowDeleteModal(false);
     } catch (e) {
@@ -119,30 +122,27 @@ const Utilisateurs = ({ utilisateurs }) => {
   const handleEdit = (User) => {
     setEditId(User.id);
     setEmail(User.email);
-    setNom(User.nom);
-    setPrenom(User.prenom);
-    setAge(User.age);
-    setNumtel(User.numtel);
-    setSexe(User.sexe);
+    setDisplayName(User.display_name);
+    setPhoneNumber(User.phone_number);
+    setPosition(`${User.position.latitude}, ${User.position.longitude}`); // Convert GeoPoint to string for input
+    setPhotoUrl(User.photo_url);
     setShowModal(true);
   };
 
   const clearForm = () => {
     setEmail("");
-    setNom("");
-    setPrenom("");
+    setDisplayName("");
+    setPhoneNumber("");
+    setPosition("");
+    setPhotoUrl("");
     setEditId(null);
-    setAge("");
-    setNumtel("");
-    setSexe("");
     setShowModal(false);
   };
 
   const handleSearchAndFilter = (searchTerm) => {
     const filteredData = UsersData.filter((User) => {
       const searchCondition = !searchTerm ||
-        User.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        User.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        User.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         User.email.toLowerCase().includes(searchTerm.toLowerCase());
       return searchCondition;
     });
@@ -174,7 +174,7 @@ const Utilisateurs = ({ utilisateurs }) => {
         <Box p={2}>
           <TextField
             name="search"
-            label="Rechercher par nom, prenom ou email"
+            label="Rechercher par nom ou email"
             variant="outlined"
             fullWidth
             value={searchTerm}
@@ -186,17 +186,21 @@ const Utilisateurs = ({ utilisateurs }) => {
               <div key={item.id} className="menu-items">
                 <ListItem divider>
                   <ListItemAvatar>
-                    <Avatar src={item.sexe === "Femme" ? female : male} />
+                    {item.photo_url ? (
+                      <Avatar alt={item.display + " photo"} src={item.photo_url} />
+                    ) : (
+                      <Avatar>{item.display_name.charAt(0)}</Avatar>
+                    )}
                   </ListItemAvatar>
                   <ListItemText
-                    primary={`${item.nom} ${item.prenom}`}
+                    primary={item.display_name}
                     secondary={
                       <>
                         <span>Email : {item.email}</span>
                         <br />
-                        <span>Age : {item.age}</span>
+                        <span>Phone Number : {item.phone_number}</span>
                         <br />
-                        <span>Numero de telephone : {item.numtel}</span>
+                        <span>Position : {item.position.latitude}, {item.position.longitude}</span> {/* Convert GeoPoint to string */}
                       </>
                     }
                   />
@@ -232,55 +236,42 @@ const Utilisateurs = ({ utilisateurs }) => {
             />
             <TextField
               required
-              name="nom"
-              label="nom"
+              name="display_name"
+              label="Display Name"
               type="text"
               fullWidth
               margin="dense"
-              value={nom}
-              onChange={(e) => setNom(e.target.value)}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
             />
             <TextField
               required
-              name="prenom"
-              label="prenom"
+              name="phone_number"
+              label="Phone Number"
               type="text"
               fullWidth
               margin="dense"
-              value={prenom}
-              onChange={(e) => setPrenom(e.target.value)}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
             />
-            <TextField
-              required
-              name="age"
-              label="age"
-              type="number"
+            {/* <TextField
+              name="position"
+              label="Position (lat, lng)"
+              type="text"
               fullWidth
               margin="dense"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-            />
-            <TextField
-              required
-              name="numtel"
-              label="numtel"
-              type="number"
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+            /> */}
+            {/* <TextField
+              name="photo_url"
+              label="Photo URL"
+              type="url"
               fullWidth
               margin="dense"
-              value={numtel}
-              onChange={(e) => setNumtel(e.target.value)}
-            />
-            <FormControl fullWidth margin="dense">
-              <InputLabel id="sexe-label">Sexe</InputLabel>
-              <Select
-                labelId="sexe-label"
-                value={sexe}
-                onChange={(e) => setSexe(e.target.value)}
-              >
-                <MenuItem value="Homme">Homme</MenuItem>
-                <MenuItem value="Femme">Femme</MenuItem>
-              </Select>
-            </FormControl>
+              value={photoUrl}
+              onChange={(e) => setPhotoUrl(e.target.value)}
+            /> */}
           </form>
         </DialogContent>
         <DialogActions>
