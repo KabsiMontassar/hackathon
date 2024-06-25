@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { db } from "../Firebase";
 import { collection, query } from "firebase/firestore";
 import { addDoc, doc, deleteDoc, onSnapshot, updateDoc  , GeoPoint} from "firebase/firestore";
+
 import {
   Button,
   Dialog,
@@ -71,7 +72,7 @@ const Utilisateurs = ({ utilisateurs }) => {
 
    // let positionArray = position.split(',').map(coord => parseFloat(coord.trim()));
 
-let positionArray = [0,0]
+let positionArray = [74, 88];
 let geoPoint = new GeoPoint(positionArray[0], positionArray[1]);
 
     let data = {

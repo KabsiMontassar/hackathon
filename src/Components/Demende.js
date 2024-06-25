@@ -31,6 +31,7 @@ const Demende = ({ demende }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
+  const [type, setType] = useState("");
   
   useEffect(() => {
     const fetchUsers = async () => {
@@ -78,6 +79,7 @@ const Demende = ({ demende }) => {
       userKey: selectedUser.props.value.id, // Assuming 'uid' is the unique identifier for users
       DatedeDemende: Timestamp.now(), // Use Firestore Timestamp
       State: "en attente",
+      type :  type,
     };
 
     try {
@@ -212,6 +214,17 @@ const Demende = ({ demende }) => {
                   {user.email}
                 </MenuItem>
               ))}
+            </Select>
+
+            <Select 
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              fullWidth
+              label="Type"
+            >
+              <MenuItem value="Hotel">Hotel</MenuItem>
+              <MenuItem value="House">House</MenuItem>
+              <MenuItem value="Restaurant">Restaurant</MenuItem>
             </Select>
           </form>
         </DialogContent>

@@ -2,7 +2,11 @@
 import Buttons from "./Buttons";
 import logo from"../img/greener.png";
 
-const Navbar = ({ Setmembre, setCarte, SetDemende }) => {
+const Navbar = ({ Setmembre, setCarte, SetDemende  , 
+
+  SetProducts,
+  SetAchievement
+ }) => {
 
 
   return (
@@ -19,6 +23,9 @@ const Navbar = ({ Setmembre, setCarte, SetDemende }) => {
         Setmembre={Setmembre}
         setCarte={setCarte}
         SetDemende={SetDemende}
+        SetProducts={SetProducts}
+        SetAchievement={SetAchievement}
+
       />
       <div className="logo-container">
       <h3 className="logo" >Greener</h3>

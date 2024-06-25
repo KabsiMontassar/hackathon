@@ -6,6 +6,8 @@ function App() {
   const [membre, setMembre] = useState(true);
   const [carte, setCarte] = useState(false);
   const [demende, setDemende] = useState(false);
+  const [products, setProducts] = useState(false);
+  const [achievement, setAchievement] = useState(false);
 
   return (
     <div className="App">
@@ -14,11 +16,15 @@ function App() {
         setCarte={setCarte}
       
         SetDemende={setDemende}
+        SetProducts={setProducts}
+        SetAchievement={setAchievement}
       />
       <div className="items-wrapper">
         <Items
           membre={membre}
           carte={carte}
+          products={products}
+          achievement={achievement}
           demende={demende}
         />
       </div>

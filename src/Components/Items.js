@@ -3,8 +3,11 @@
 import Carte from "./Carte";
 import Utilisateurs from "./Utilisateur";
 import Demende from "./Demende";
+import Products from "./products";
+import Achievements from "./Achievements";
 
-const Items = ({membre, carte,  demende }) => {
+
+const Items = ({membre, carte,  demende  , products , achievement}) => {
 
 
 
@@ -13,6 +16,9 @@ const Items = ({membre, carte,  demende }) => {
       <Utilisateurs utilisateurs={membre}  />
       <Carte carte={carte}  />
       <Demende demende={demende}  />
+      <Products products={products}  />
+      <Achievements achievements={achievement}  />
+
       </>
   );
 };

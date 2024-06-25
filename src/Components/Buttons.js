@@ -2,7 +2,7 @@
 /**@jsx jsx */
 import { css, jsx } from "@emotion/react";
 
-const Buttons = ({ Setmembre, setCarte, SetDemende }) => {
+const Buttons = ({ Setmembre, setCarte, SetDemende , SetAchievement , SetProducts }) => {
  
 
   return (
@@ -59,6 +59,8 @@ const Buttons = ({ Setmembre, setCarte, SetDemende }) => {
           Setmembre(true);
           setCarte(false);
           SetDemende(false);
+          SetProducts(false);
+          SetAchievement(false);
         }}
       >
         <span>Nos membres</span>
@@ -69,6 +71,8 @@ const Buttons = ({ Setmembre, setCarte, SetDemende }) => {
           Setmembre(false);
           setCarte(true);
           SetDemende(false);
+          SetProducts(false);
+          SetAchievement(false);
         }}
       >
         <span>Carte des Emplacements</span>
@@ -79,9 +83,33 @@ const Buttons = ({ Setmembre, setCarte, SetDemende }) => {
           Setmembre(false);
           setCarte(false);
           SetDemende(true);
+          SetProducts(false);
+          SetAchievement(false);
         }}
       >
         <span>Les attentes</span>
+      </button>
+      <button
+        onClick={() => {
+          Setmembre(false);
+          setCarte(false);
+          SetDemende(false);
+          SetProducts(true);
+          SetAchievement(false);
+        }}
+      >
+        <span>Products</span>
+      </button>
+      <button
+        onClick={() => {
+          Setmembre(false);
+          setCarte(false);
+          SetDemende(false);
+          SetProducts(false);
+          SetAchievement(true);
+        }}
+      >
+        <span>Achievements</span>
       </button>
 
     
