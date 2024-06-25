@@ -66,6 +66,18 @@ const Buttons = ({ Setmembre, setCarte, SetDemende , SetAchievement , SetProduct
         <span>Nos membres</span>
       </button>
 
+      <button
+        onClick={() => {
+          Setmembre(false);
+          setCarte(false);
+          SetDemende(false);
+          SetProducts(false);
+          SetAchievement(true);
+        }}
+      >
+        <span>Achievements</span>
+      </button>
+
       <button  
         onClick={() => {
           Setmembre(false);
@@ -100,17 +112,7 @@ const Buttons = ({ Setmembre, setCarte, SetDemende , SetAchievement , SetProduct
       >
         <span>Products</span>
       </button>
-      <button
-        onClick={() => {
-          Setmembre(false);
-          setCarte(false);
-          SetDemende(false);
-          SetProducts(false);
-          SetAchievement(true);
-        }}
-      >
-        <span>Achievements</span>
-      </button>
+     
 
     
      
